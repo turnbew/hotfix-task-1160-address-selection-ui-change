@@ -12,14 +12,14 @@ CHANGES
 	
 	\network-site\addons\default\modules\firesale\controllers\front_cart.php
 	
-		added code: 
+		ADDED CODE: 
 		
 			->append_css('module::checkout.css')
 		
 	
 	\network-site\addons\default\modules\firesale\js\firesale.js
 	
-		added code: 
+		ADDED BRAND NEW CODE: 
 			
 			
 				/* ************************************************************* */
@@ -263,15 +263,18 @@ CHANGES
 				
 		\network-site\addons\default\modules\firesale\views\checkout.php
 		
-			changed code
+			CHANGED CODE 
 			
-				 <div class="col-sm-4"><!-- START SHIPPING DETAILS -->
-                        <?php if( $ship_req ): ?>
-						<h5><?php echo lang('firesale:title:ship'); ?></h5>                       
-							<?php if( isset($addresses) && !empty($addresses) ): ?>
+				TO 
+				
+				<div class="col-sm-4"><!-- START SHIPPING DETAILS -->
+						<h5><?php echo lang('firesale:title:ship'); $display_ship_to = 'block;'; ?></h5>                       
 							<fieldset>
 								<table class="checkout_addresses">
+						<?php if( $ship_req ): ?>
+							<?php if( isset($addresses) && !empty($addresses) ): ?>
 									<?php 
+										$display_ship_to = 'none;';
 										$counter = 1;
 										foreach( $addresses AS $key => $address): 
 									?>
@@ -335,11 +338,11 @@ CHANGES
 											<?php echo lang('firesale:addresses:new_address'); ?>
 										</td>
 									</tr>
+							<?php endif; ?>
 									<tr>
 										<td colspan="2" class="fields_ship_to">
-											<div class="fields_container_ship_to">
+											<div class="fields_container_ship_to" style="display: <?php echo $display_ship_to ?>">
 											<?php foreach( $ship_fields AS $subtitle => $section ): ?>
-												<div<?php echo ( !isset($addresses) || empty($addresses) ? ' style="display: none"' : '' ); ?>>
 												<?php foreach( $section AS $field ): ?>
 													<div>
 														<label for="<?php echo $field['input_slug']; ?>">
@@ -351,25 +354,24 @@ CHANGES
 														<?php echo ( form_error($field['input_slug']) ? '<div class="error">'.form_error($field['input_slug']).'</div>' : '' ); ?>
 													</div>
 												<?php endforeach; ?>
-												</div>
 											<?php endforeach; ?>
 											</div><!-- END fields_container_ship_to -->
 										</td>
 									</tr>
 								</table>
-							</fieldset>
-							<?php endif; ?>
+							</fieldset>							
 						<?php endif; ?>
 					</div><!-- END SHIPPING DETAILS -->
 					
 					
                     
                     <div class="col-sm-4"><!-- START BILLING DETAILS -->
-                        <h5 class="bottom-buffer"><?php echo lang('firesale:title:bill'); ?></h5>
-                        <?php if( isset($addresses) && !empty($addresses) ): ?>
+                        <h5 class="bottom-buffer"><?php echo lang('firesale:title:bill'); $display_ship_to = 'block;';?></h5>						
 						<fieldset>
 							<table class="checkout_addresses">
+							<?php if( isset($addresses) && !empty($addresses) ): ?>
 								<?php 
+										$display_ship_to = 'none;';
 										$counter = 1;
 										foreach( $addresses AS $key => $address): 
 									?>
@@ -425,11 +427,11 @@ CHANGES
 									</td>
 									<td class="tag"><?php echo lang('firesale:addresses:new_address'); ?></td>
 								</tr>
+							<?php endif; ?>
 								<tr>
 									<td colspan="2" class="fields_bill_to">
-										<div class="fields_container_bill_to">
+										<div class="fields_container_bill_to" style="display: <?php echo $display_ship_to ?>">
 										<?php foreach( $bill_fields AS $subtitle => $section ): ?>
-											<div<?php echo ( !isset($addresses) || empty($addresses) ? ' style="display: none"' : '' ); ?>>
 											<?php foreach( $section AS $field ): ?>
 												<div>
 													<label for="<?php echo $field['input_slug']; ?>"><?php echo lang(substr($field['input_title'], 5)); ?> <?php echo $field['required']; ?>:</label>
@@ -437,34 +439,10 @@ CHANGES
 													<?php echo ( form_error($field['input_slug']) ? '<div class="error">'.form_error($field['input_slug']).'</div>' : '' ); ?>
 												</div>
 											<?php endforeach; ?>
-											</div>
 										<?php endforeach; ?>
 										</div>								
 									</td>
 								</tr>
 							</table>
 						</fieldset>
-						<?php endif; ?>
 					</div><!-- END BILLING DETAILS -->
-                
-                    
-                    <div class="col-sm-4">
-                        <h5 <?php echo ( ! $valid_gateway ? ' class="error"' : '' ); ?> class="bottom-buffer"><?php echo lang('firesale:checkout:title:payment_method'); ?></h5>
-                        <fieldset<?php echo ( ! $valid_gateway ? ' class="error"' : '' ); ?>>
-
-                            <p><?php echo lang('firesale:checkout:select_payment_method'); ?></p>
-                            <?php foreach( $this->gateways->get_enabled() as $gateway_id => $gateway ): ?>
-                                <div>
-                                    <label for="gateway_<?php echo $gateway_id; ?>">
-                                        <input type="radio" name="gateway" id="gateway_<?php echo $gateway_id; ?>" value="<?php echo $gateway_id; ?>" <?php echo set_radio('gateway', $gateway_id); ?> />
-                                        <strong><?php echo $gateway['name']; ?></strong>
-                                    </label>
-                                </div>
-                            <?php endforeach; ?>
-
-                            <button type="submit" name="btnAction" value="pay" class="btn bg-green color-white bottom-buffer"><span><?php echo lang('firesale:checkout:submit_and_pay'); ?></span></button>
-                        </fieldset>
-                    </div>
-					
-					
-                </div>

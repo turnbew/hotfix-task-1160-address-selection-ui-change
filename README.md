@@ -12,11 +12,19 @@ CHANGES
 	
 	\network-site\addons\default\modules\firesale\controllers\front_cart.php
 	
-		ADDED CODE: 
+		ADDED CODE 1: 
 		
 			->append_css('module::checkout.css')
+			
+		ADDED CODE 2: 
 		
-	
+			...
+			$data['is_user_logged'] = 0; 			//new one
+			if( isset($this->current_user->id) ) { 	//already existed
+				$data['is_user_logged'] = 1;		//new code
+			....
+			
+			
 	\network-site\addons\default\modules\firesale\js\firesale.js
 	
 		ADDED BRAND NEW CODE: 
@@ -32,6 +40,8 @@ CHANGES
 				/* ************************************************************* */
 				/* ************************************************************* */
 
+				
+				
 				//If one of the radio buttons changing in 'BILLING DETAILS' part
 				$('.radio_bill_to').change(function() {
 					clearInputFieldsData('.fields_container_bill_to');
@@ -50,8 +60,18 @@ CHANGES
 						? copySelectedShippingAddress()
 						: clearInputFieldsData('.fields_container_bill_to');
 				})
+
+
+
 				
 				
+				//If create new "bill" address radio button checked
+				$('#bill_to_new').change(function() {
+					var checked = $(this).prop('checked');
+					setLayoutChangesCheckbox('bill_to', checked);
+				})	
+				
+
 				
 				
 
@@ -75,22 +95,45 @@ CHANGES
 						? setProfileAddressData()
 						: clearInputFieldsData('.fields_container_ship_to');
 				})
+				
+				
+				
+				
+				//If create new "ship" address radio button checked
+				$('#ship_to_new').change(function() {
+					var checked = $(this).prop('checked');
+					setLayoutChangesCheckbox('ship_to', checked);
+					if (!$('#ship_to_profile_address').prop(checked)) clearInputFieldsData('.fields_container_ship_to');
+				})	
 
-
+				
+				
+			
+				
+				//Copy shipping details if input fields are changes
+				$('.input_field_ship_to :input').on('change keyup', function() {
+					if ($('#bill_details_same').prop('checked')) {
+						$('#' + $(this).prop('id').replace('ship', 'bill')).val($(this).prop('value'));
+					}
+				});
+				
+				
 				
 				
 				
 				function setLayoutChangesCheckbox(selector, checked) {
-					$('.radio_' + selector).prop('checked', false);
-					$('.tr_' + selector).removeClass('active_' + selector).addClass('inactive');		
-					if (!checked)  {
-						$('.radio_' + selector + ':first').prop('checked', true);
-						$('.tr_' + selector + ':first').addClass('active_' + selector).removeClass('inactive');
-						$('.fields_container_' + selector).css('display', 'none');	
-					} else {
-						$('.fields_container_' + selector).css('display', 'block');	
-						$('.fields_' + selector).addClass('active');
-					}	
+					if ($('.radio_' + selector).length) {
+						$('.radio_' + selector).prop('checked', false);
+						$('.tr_' + selector).removeClass('active_' + selector).addClass('inactive');		
+						if (!checked && !$('#' + selector + '_new').prop('checked'))  {
+							$('.radio_' + selector + ':first').prop('checked', true);
+							$('.tr_' + selector + ':first').addClass('active_' + selector).removeClass('inactive');
+							$('.fields_container_' + selector).css('display', 'none');	
+						} else {
+							$('.fields_container_' + selector).css('display', 'block');				
+							$('.fields_' + selector).addClass('active');
+						}	
+					}
 				}	
 				
 				
@@ -160,7 +203,7 @@ CHANGES
 					];
 					if ($('#bill_details_same').prop('checked')) {
 						var selector = '';
-						if ($('#ship_to_profile_address').prop('checked')) {
+						if (!$('input[name=ship_to]').length || $('#ship_to_profile_address').prop('checked')) {
 							selector = '#ship_';
 						} else {
 							selector = $('input[name=ship_to]:checked').prop('class').replace('radio_ship_to ', '');

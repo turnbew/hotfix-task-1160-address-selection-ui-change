@@ -48,7 +48,7 @@ CHANGES
 		ADDED BRAND NEW CODE: 
 			
 			
-/* ************************************************************* */
+				/* ************************************************************* */
 				/* ************************************************************* */
 				/* ************************************************************* */
 				/* 																							
@@ -179,6 +179,7 @@ CHANGES
 				
 				
 				
+				
 				function setProfileAddressData() {
 					$.get(SITE_URL + 'network_settings/content/shop/orders/ajax_user_address/' + USER_ID, function(response) {
 						if ( response != 'false' ) {
@@ -226,7 +227,7 @@ CHANGES
 					];
 					if ($('#bill_details_same').prop('checked')) {
 						var selector = '';
-						if (!$('input[name=ship_to]').length < 2 || $('#ship_to_profile_address').prop('checked')) {
+						if ($('input[name=ship_to]').length <= 1 || $('#ship_to_profile_address').prop('checked')) {
 							selector = '#ship_';
 						} else {
 							selector = $('input[name=ship_to]:checked').prop('class').replace('radio_ship_to ', '');

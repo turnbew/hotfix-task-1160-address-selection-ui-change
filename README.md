@@ -10,6 +10,24 @@ CHANGES
 
 	IN FILES:
 	
+	\network-site\addons\default\modules\network_settings\controllers\shop\admin_orders.php
+		
+		CHANGED CODE: 
+			FROM: 
+				if ! group_has_role('network_settings', 'content'))
+				{
+					redirect('admin-portal/error/no-permission/');
+				}
+			
+			TO: 
+				$method = $this->router->fetch_method();
+				$exceptions = array("ajax_user_address");
+				if (! in_array($method, $exceptions) and ! group_has_role('network_settings', 'content'))
+				{
+					redirect('admin-portal/error/no-permission/');
+				}
+
+	
 	\network-site\addons\default\modules\firesale\controllers\front_cart.php
 	
 		ADDED CODE 1: 
@@ -30,7 +48,7 @@ CHANGES
 		ADDED BRAND NEW CODE: 
 			
 			
-				/* ************************************************************* */
+/* ************************************************************* */
 				/* ************************************************************* */
 				/* ************************************************************* */
 				/* 																							
@@ -161,16 +179,21 @@ CHANGES
 				
 				
 				
-				
 				function setProfileAddressData() {
-					$.getJSON(SITE_URL + 'network_settings/content/shop/orders/ajax_user_address/' + USER_ID, function(data) {
-						if ( data != 'false' ) {
-							for( var k in data ) { 
-								$('#ship_' + k).val(data[k]); 
+					$.get(SITE_URL + 'network_settings/content/shop/orders/ajax_user_address/' + USER_ID, function(response) {
+						if ( response != 'false' ) {
+							try {
+								var data = $.parseJSON(response);  
+								for( var k in data ) { 
+									$('#ship_' + k).val(data[k]); 
+								}
+							}
+							catch (e) {
+								console.log('Response is not a JSON object');
 							}
 						}
 						setButtonsDisabledProperty('ship_to', false);
-						copySelectedShippingAddress()
+						copySelectedShippingAddress();
 					});	
 				}
 				
@@ -203,7 +226,7 @@ CHANGES
 					];
 					if ($('#bill_details_same').prop('checked')) {
 						var selector = '';
-						if (!$('input[name=ship_to]').length || $('#ship_to_profile_address').prop('checked')) {
+						if (!$('input[name=ship_to]').length < 2 || $('#ship_to_profile_address').prop('checked')) {
 							selector = '#ship_';
 						} else {
 							selector = $('input[name=ship_to]:checked').prop('class').replace('radio_ship_to ', '');
